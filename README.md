@@ -27,12 +27,24 @@ Open http://127.0.0.1:5000 and sign in using `SCANNER_PASSWORD` (default fallbac
 
 ## Deploy to Render
 
-1. Push this repository to your GitHub account.
-2. In Render, create a Web Service connected to this repository.
-3. Render can use the included `render.yaml`.
-4. Set `SCANNER_PASSWORD` to a strong, unique password in Render's environment settings.
-5. Keep `FLASK_SECRET_KEY` private. Render can generate it from `render.yaml`; otherwise set a long random value yourself.
-6. Deploy and open the `.onrender.com` URL.
+### Option A: Using Render Blueprint (Automatic)
+1. In Render, click **New +** -> **Blueprint**.
+2. Select this repository. Render will automatically read `render.yaml`.
+3. Click **Apply**.
+
+### Option B: Web Service (Python or Docker)
+1. In Render Dashboard, click **New +** -> **Web Service**.
+2. Select your repository `port-scanner-web`.
+3. Choose either **Python** or **Docker**:
+   - **If choosing Python**:
+     - **Build Command**: `pip install -r requirements.txt`
+     - **Start Command**: `gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --threads 8 --timeout 120`
+   - **If choosing Docker**:
+     - Render automatically detects the included `Dockerfile` and builds it.
+4. Environment Variables:
+   - `SCANNER_PASSWORD`: Choose your login password (default fallback: `admin123`).
+   - `FLASK_SECRET_KEY`: Long random string for session encryption.
+5. Deploy and open your `.onrender.com` link.
 
 ## Important limitations
 
