@@ -9,7 +9,7 @@ A Flask web application for authorized TCP port scanning, with a browser UI, liv
 - Live progress and open-port results
 - Configurable timeout and concurrency
 - CSV export
-- Render deployment configuration
+- Native Render deployment configuration (Python + Gunicorn)
 - Password-protected UI and API
 
 ## Run locally
@@ -27,24 +27,23 @@ Open http://127.0.0.1:5000 and sign in using `SCANNER_PASSWORD` (default fallbac
 
 ## Deploy to Render
 
-### Option A: Using Render Blueprint (Automatic)
-1. In Render, click **New +** -> **Blueprint**.
-2. Select this repository. Render will automatically read `render.yaml`.
-3. Click **Apply**.
+### Option 1: Render Blueprint (Automatic)
+1. In Render Dashboard, click **New +** -> **Blueprint**.
+2. Connect your repository `port-scanner-web`.
+3. Render will automatically read `render.yaml` and configure everything.
+4. Click **Apply**.
 
-### Option B: Web Service (Python or Docker)
+### Option 2: Web Service (Manual)
 1. In Render Dashboard, click **New +** -> **Web Service**.
-2. Select your repository `port-scanner-web`.
-3. Choose either **Python** or **Docker**:
-   - **If choosing Python**:
-     - **Build Command**: `pip install -r requirements.txt`
-     - **Start Command**: `gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --threads 8 --timeout 120`
-   - **If choosing Docker**:
-     - Render automatically detects the included `Dockerfile` and builds it.
-4. Environment Variables:
-   - `SCANNER_PASSWORD`: Choose your login password (default fallback: `admin123`).
-   - `FLASK_SECRET_KEY`: Long random string for session encryption.
-5. Deploy and open your `.onrender.com` link.
+2. Connect your repository `port-scanner-web`.
+3. Set the following settings:
+   - **Runtime**: `Python 3`
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --threads 8 --timeout 120`
+4. Under **Environment Variables**:
+   - `SCANNER_PASSWORD`: Your login password (fallback: `admin123`).
+   - `FLASK_SECRET_KEY`: A long random secret string.
+5. Click **Create Web Service**.
 
 ## Important limitations
 
