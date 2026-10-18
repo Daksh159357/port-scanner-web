@@ -13,7 +13,7 @@ from flask import Flask, jsonify, render_template, request, Response, session, r
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY") or secrets.token_hex(32)
-SCANNER_PASSWORD = os.environ.get("SCANNER_PASSWORD")
+SCANNER_PASSWORD = os.environ.get("SCANNER_PASSWORD") or "admin123"
 
 lock = threading.Lock()
 state = {

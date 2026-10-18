@@ -23,7 +23,7 @@ export FLASK_SECRET_KEY='replace-with-a-long-random-secret'
 python app.py
 ```
 
-Open http://127.0.0.1:5000 and sign in using `SCANNER_PASSWORD`.
+Open http://127.0.0.1:5000 and sign in using `SCANNER_PASSWORD` (default fallback password is `admin123`).
 
 ## Deploy to Render
 
