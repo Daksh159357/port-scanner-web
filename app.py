@@ -1,62 +1,21 @@
 import csv
-import hmac
 import io
 import ipaddress
 import os
-import secrets
 import socket
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from flask import Flask, jsonify, render_template, request, Response, session, redirect, url_for
+from flask import Flask, jsonify, render_template, request, Response
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("FLASK_SECRET_KEY") or secrets.token_hex(32)
-SCANNER_PASSWORD = os.environ.get("SCANNER_PASSWORD") or "admin123"
 
 lock = threading.Lock()
 state = {
     "running": False, "stop": None, "target": "", "completed": 0,
     "total": 65536, "results": [], "started": 0, "error": None,
 }
-
-
-@app.before_request
-def require_login():
-    if request.endpoint in {"login", "health", "static"}:
-        return None
-    if not SCANNER_PASSWORD:
-        if request.endpoint == "index":
-            return ("Scanner is not configured. Set SCANNER_PASSWORD in the environment.", 503)
-        return jsonify(error="Scanner is not configured. Set SCANNER_PASSWORD."), 503
-    if not session.get("authenticated"):
-        if request.path == "/":
-            return redirect(url_for("login"))
-        return jsonify(error="Authentication required."), 401
-
-
-@app.get("/login")
-def login():
-    if not SCANNER_PASSWORD:
-        return "Set SCANNER_PASSWORD in the environment.", 503
-    return render_template("login.html")
-
-
-@app.post("/login")
-def login_post():
-    password = request.form.get("password", "")
-    if SCANNER_PASSWORD and hmac.compare_digest(password, SCANNER_PASSWORD):
-        session["authenticated"] = True
-        session.permanent = True
-        return redirect(url_for("index"))
-    return render_template("login.html", error="Incorrect password."), 401
-
-
-@app.post("/logout")
-def logout():
-    session.clear()
-    return redirect(url_for("login"))
 
 
 @app.get("/")
@@ -212,4 +171,3 @@ def export():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", "10000"))
     app.run(host="0.0.0.0", port=port, debug=False)
-
